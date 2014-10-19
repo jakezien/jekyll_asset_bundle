@@ -27,7 +27,7 @@ module JekyllAssetBundle
       end     
       
       def remove_staged_assets
-        FileUtils.rm_rf(File.join(@site.source, DEFAULTS[:staging]))
+        # FileUtils.rm_rf(File.join(@site.source, DEFAULTS[:staging]))
       end 
     end
     
