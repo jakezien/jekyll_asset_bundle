@@ -102,6 +102,7 @@ module JekyllAssetBundle
       FileUtils::mkpath(staging) unless File.directory?(staging)
       @assets.each do |asset|
         tmp_output_path = File.join(staging, asset.filename)
+        puts "#{tmp_output_path}"
         File.open(tmp_output_path, 'w') do |file|
           file.write(asset.content)
         end
