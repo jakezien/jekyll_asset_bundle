@@ -27,7 +27,7 @@ module JekyllAssetBundle
       end     
       
       def remove_staged_assets
-        # FileUtils.rm_rf(File.join(@site.source, DEFAULTS[:staging]))
+        FileUtils.rm_rf(File.join(@site.source, DEFAULTS[:staging]))
       end 
     end
     
@@ -99,23 +99,41 @@ module JekyllAssetBundle
     
     def save
       staging = File.join(@site.source, DEFAULTS[:staging], DEFAULTS[:dest], @type)
+
       FileUtils::mkpath(staging) unless File.directory?(staging)
+      
       @assets.each do |asset|
         tmp_output_path = File.join(staging, asset.filename)
-        puts "#{tmp_output_path}"
+
+        split_path = asset.filename.split('/')
+
+        if split_path.length > 1
+          split_path.pop
+
+          new_dir_path = File.join(@site.source, DEFAULTS[:staging], DEFAULTS[:dest ], 'js/', split_path.join("/"))
+          if !File.directory?(new_dir_path)
+            FileUtils::mkpath(new_dir_path) 
+            # puts "new path #{new_dir_path}"
+          end
+        end
+
+
         File.open(tmp_output_path, 'w') do |file|
           file.write(asset.content)
         end
         # puts "#{asset.filename} saved to #{asset.output_path}"          
       end
+
     end
     
     def markup
       template = @type == 'css' ? '<link rel="stylesheet" type="text/css" href="%s">' : '<script type="text/javascript" src="%s"></script>'
       
-      @html = @assets.map do |asset|
-        template % File.join(@dest, asset.filename)
-      end.join("\n")
+      if @type == 'css'
+        @html = @assets.map do |asset|
+          template % File.join(@dest, asset.filename)
+        end.join("\n")
+      end
     end
     
   end
